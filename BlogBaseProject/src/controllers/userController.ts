@@ -14,7 +14,7 @@ export const getUsers = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const getUser = asyncHandler(async (req: Request, res: Response) => {
-  const user = userService.getUserByUsername(req.params.username);
+  const user = await userService.getUserByUsername(req.params.username);
   res.status(200).json({ success: true, data: user });
 });
 

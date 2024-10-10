@@ -47,7 +47,7 @@ exports.getUsers = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, v
     res.status(200).json({ success: true, data: users });
 }));
 exports.getUser = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = userService.getUserByUsername(req.params.username);
+    const user = yield userService.getUserByUsername(req.params.username);
     res.status(200).json({ success: true, data: user });
 }));
 // Optionally, add DELETE and EDIT functions

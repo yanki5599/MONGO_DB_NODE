@@ -24,7 +24,9 @@ export const getPost = async (postId: string): Promise<IPost> => {
   if (!post)
     throw new ErrorWithStatusCode("Post not found", statusCode.NOT_FOUND);
 
-  return await (await post.populate("author")).populate("comments.author");
+  return await (
+    await post.populate("author")
+  ).populate({ path: "comments.author", select: "username" });
 };
 export const updatePost = async (
   postId: string,
