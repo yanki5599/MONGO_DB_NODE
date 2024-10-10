@@ -8,7 +8,7 @@ import connectDB from "./config/db";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(express.json());
@@ -18,7 +18,6 @@ connectDB();
 // Routes
 app.use("/api/posts", postRouter);
 app.use("/api/users", userRouter);
-
 
 // Error handling middleware
 app.use(errorHandler);

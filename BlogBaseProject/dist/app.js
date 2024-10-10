@@ -11,7 +11,7 @@ const errorHandler_1 = require("./middleware/errorHandler");
 const db_1 = __importDefault(require("./config/db"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(express_1.default.json());
 (0, db_1.default)();

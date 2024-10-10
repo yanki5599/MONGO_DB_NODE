@@ -27,7 +27,7 @@ const UserSchema = new Schema<IUser>({
   },
   profile: {
     bio: String,
-    socialLinks: [String],
+    socialLinks: [{ type: String, validate: validator.isURL }],
   },
   posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
 });
