@@ -13,12 +13,10 @@ export const createPost = async (post: IPost): Promise<IPost> => {
   await user.save();
   return created;
 };
-
 export const getPosts = async (): Promise<IPost[]> => {
   const posts = await PostModel.find().populate("author");
   return posts;
 };
-
 export const getPost = async (postId: string): Promise<IPost> => {
   const post = await PostModel.findById(postId);
   if (!post)
@@ -52,10 +50,16 @@ export const addComment = async (
   postId: string,
   comment: IComment
 ): Promise<IComment> => {
-  const post = await PostModel.findById(postId);
-  if (!post)
-    throw new ErrorWithStatusCode("Post not found", statusCode.BAD_REQUEST);
-  post.comments.push(comment);
-  await post.save();
+  await userModel
+    .findById(comment.author)
+    .orFail(new ErrorWithStatusCode("Author not found", statusCode.NOT_FOUND));
+
+  const post = await PostModel.findByIdAndUpdate(
+    postId,
+    { $push: { comments: comment } },
+    { new: true }
+  ).orFail(new ErrorWithStatusCode("Post not found", statusCode.NOT_FOUND));
+  console.log(post);
+
   return comment;
 };
