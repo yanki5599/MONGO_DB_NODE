@@ -42,12 +42,10 @@ export const deletePost = async (postId: string): Promise<IPost> => {
   const deleted = await PostModel.findByIdAndDelete(postId);
   if (!deleted) throw new Error("Post not found");
   // delete the post from the user's posts array
-  const user = await userModel.findById(deleted.author);
-  if (!user) throw new Error("User not found");
-  user.posts = user.posts.filter(
-    (id) => id.toString() !== deleted.id.toString()
-  );
-  await user.save();
+  await userModel
+    .findByIdAndUpdate(deleted.author, { $pull: { posts: deleted._id } })
+    .orFail(new ErrorWithStatusCode("User not found", statusCode.NOT_FOUND));
+
   return deleted;
 };
 export const addComment = async (
