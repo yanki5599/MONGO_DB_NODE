@@ -9,9 +9,12 @@ const postRoutes_1 = __importDefault(require("./routes/postRoutes"));
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const errorHandler_1 = require("./middleware/errorHandler");
 const db_1 = __importDefault(require("./config/db"));
+const swagger_1 = __importDefault(require("./swagger"));
+const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 5000;
+app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_1.default));
 // Middleware
 app.use(express_1.default.json());
 (0, db_1.default)();
