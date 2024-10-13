@@ -3,6 +3,7 @@ import validator from "validator";
 import { ICollageUser } from "./collageUser";
 
 export interface IGrade {
+  _id: Types.ObjectId;
   note: string;
   grade: number;
 }

@@ -12,11 +12,18 @@ export const register = asyncHandler(
     res.status(201).json({
       success: true,
       message: "Student created successfully",
-      data: { username: added.fullName, userId: added.userId },
+      data: { username: added.fullName, userId: added.id },
     });
   }
 );
 
 export const getGrades = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {}
+  async (req: Request, res: Response, next: NextFunction) => {
+    const student = await studentService.getGrades((req as any).student.id);
+    res.status(200).json({
+      success: true,
+      message: "Grades fetched successfully",
+      data: student,
+    });
+  }
 );

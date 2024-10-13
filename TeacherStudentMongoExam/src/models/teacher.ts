@@ -8,7 +8,7 @@ import { types } from "util";
 export interface ITeacher extends ICollageUser {
   _id: Types.ObjectId;
   userId: Types.ObjectId;
-  students: IStudent[];
+  students: mongoose.Types.ObjectId[];
 }
 
 const userSchema: mongoose.Schema<ITeacher> = new mongoose.Schema({

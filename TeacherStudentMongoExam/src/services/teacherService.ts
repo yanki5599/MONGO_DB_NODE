@@ -6,6 +6,8 @@ import { Role } from "../models/role";
 import classRoomModel, { IClassRoom } from "../models/classRoom";
 import * as classRoomService from "./classRoomService";
 import statusCode from "../models/errorStatusConstants";
+import mongoose from "mongoose";
+import studentModel, { IStudent } from "../models/student";
 
 export const create = async (
   newTeacher: ITeacher,
@@ -48,4 +50,47 @@ export const getTeacherById = async (teacherId: string): Promise<ITeacher> => {
     throw new ErrorWithStatusCode("Teacher not found", 404);
   }
   return teacher;
+};
+
+export const validateStudent = async (
+  teacherId: string,
+  studentId: string
+): Promise<boolean> => {
+  const teacher = await getTeacherById(teacherId);
+  if (!teacher.students.includes(new mongoose.Types.ObjectId(studentId)))
+    throw new ErrorWithStatusCode(
+      "Student is not in your class",
+      statusCode.FORBIDDEN
+    );
+  return true;
+};
+
+export const getStudents = async (teacherId: string): Promise<ITeacher> => {
+  const teacher = await teacherModel
+    .findById(teacherId)
+    .populate({ path: "students", populate: { path: "userId" } });
+  if (!teacher)
+    throw new ErrorWithStatusCode("Teacher not found", statusCode.NOT_FOUND);
+  return teacher;
+};
+
+export const getStudentsAvg = async (
+  teacherId: string
+): Promise<IStudent[]> => {
+  const teacher = await getStudents(teacherId);
+  // get teacher with students and calculate average of their grades for each student
+  const result: IStudent[] = await studentModel.aggregate([
+    {
+      $match: { _id: { $in: teacher.students } },
+    },
+    {
+      $group: {
+        _id: "$_id",
+        avg: {
+          $avg: "$grades.grade",
+        },
+      },
+    },
+  ]);
+  return result;
 };

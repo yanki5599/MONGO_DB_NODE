@@ -1,5 +1,5 @@
 import { ErrorWithStatusCode } from "../models/errorTypes";
-import { IGrade, IStudent } from "../models/student";
+import student, { IGrade, IStudent } from "../models/student";
 import studentModel from "../models/student";
 import statusCode from "../models/errorStatusConstants";
 import { ICollageUser } from "../models/collageUser";
@@ -7,6 +7,7 @@ import * as userService from "./userService";
 import { Role } from "../models/role";
 import classRoom from "../models/classRoom";
 import * as classRoomService from "./classRoomService";
+import { stat } from "fs";
 
 export const create = async (
   newStudent: IStudent,
@@ -42,4 +43,44 @@ export const getGrades = async (studentId: string): Promise<IGrade[]> => {
   const student = await studentModel.findById(studentId);
   if (!student) throw new ErrorWithStatusCode("Student not found.", 404);
   return student.grades;
+};
+
+export const addGradeForStudent = async (
+  studentId: string,
+  grade: IGrade
+): Promise<IGrade> => {
+  try {
+    const updatedStudent = await studentModel.findByIdAndUpdate(
+      studentId,
+      {
+        $push: {
+          grades: grade,
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedStudent) {
+      throw new ErrorWithStatusCode("Student not found.", statusCode.NOT_FOUND);
+    }
+    return updatedStudent.grades[updatedStudent.grades.length - 1];
+  } catch (err: any) {
+    throw new ErrorWithStatusCode(err.message, statusCode.BAD_REQUEST);
+  }
+};
+
+export const updateGrade = async (
+  studentId: string,
+  grade: IGrade
+): Promise<IGrade> => {
+  try {
+    const updatedStudent = await studentModel.findByIdAndUpdate(
+      { studentId, "grades.id": grade._id },
+      { $set: { "grades.$": grade } },
+      { new: true }
+    );
+    return updatedStudent?.grades.find((x) => x._id == grade._id)!;
+  } catch (err: any) {
+    throw new ErrorWithStatusCode(err.message, statusCode.BAD_REQUEST);
+  }
 };
