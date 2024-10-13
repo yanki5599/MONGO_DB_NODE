@@ -35,3 +35,17 @@ export const create = async (
     throw new ErrorWithStatusCode(error.message, 400);
   }
 };
+
+export const addGradeForStudent = async (
+  studentId: string,
+  grade: number,
+  node: string
+): Promise<void> => {};
+
+export const getTeacherById = async (teacherId: string): Promise<ITeacher> => {
+  const teacher = await teacherModel.findById(teacherId).populate("userId");
+  if (!teacher) {
+    throw new ErrorWithStatusCode("Teacher not found", 404);
+  }
+  return teacher;
+};

@@ -1,5 +1,5 @@
 import { ErrorWithStatusCode } from "../models/errorTypes";
-import { IStudent } from "../models/student";
+import { IGrade, IStudent } from "../models/student";
 import studentModel from "../models/student";
 import statusCode from "../models/errorStatusConstants";
 import { ICollageUser } from "../models/collageUser";
@@ -30,4 +30,16 @@ export const create = async (
   } catch (error: any) {
     throw new ErrorWithStatusCode(error.message, 400);
   }
+};
+
+export const getStudentById = async (studentId: string): Promise<IStudent> => {
+  const student = await studentModel.findById(studentId).populate("userId");
+  if (!student) throw new ErrorWithStatusCode("Student not found.", 404);
+  return student;
+};
+
+export const getGrades = async (studentId: string): Promise<IGrade[]> => {
+  const student = await studentModel.findById(studentId);
+  if (!student) throw new ErrorWithStatusCode("Student not found.", 404);
+  return student.grades;
 };

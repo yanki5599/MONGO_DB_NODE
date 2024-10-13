@@ -16,3 +16,7 @@ export const register = asyncHandler(
     });
   }
 );
+
+export const getGrades = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {}
+);

@@ -1,9 +1,7 @@
-import e from "express";
 import express from "express";
 import * as studentController from "../controllers/studentController";
 import { studentMiddleware } from "../middleware/studentMiddleware";
 import { authMiddleware } from "../middleware/authMiddleware";
-
 const router = express.Router();
 
 /**
@@ -51,4 +49,5 @@ router.route("/register").post(studentController.register);
 router.use(authMiddleware);
 router.use(studentMiddleware);
 
+router.route("/grades").get(studentController.getGrades);
 export default router;

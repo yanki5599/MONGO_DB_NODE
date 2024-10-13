@@ -47,9 +47,7 @@ export const authenticateUser = async (
   return user;
 };
 
-export const getUserById = async (
-  id: Types.ObjectId
-): Promise<ICollageUser> => {
+export const getUserById = async (id: string): Promise<ICollageUser> => {
   const user = await UserModel.findById(id);
   if (!user) {
     throw new ErrorWithStatusCode("User not found", 404);

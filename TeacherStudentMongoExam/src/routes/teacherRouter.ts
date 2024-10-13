@@ -49,4 +49,12 @@ router.route("/register").post(teacherController.register);
 router.use(authMiddleware);
 router.use(teacherMiddleware);
 
+router
+  .route("/grade/:id")
+  .get(teacherController.getStudentGrades)
+  .post(teacherController.addGradeForStudent)
+  .put(teacherController.updateGradeForStudent);
+
+router.get("/getAllStudents", teacherController.getAllStudents);
+router.get("/StudentsAvg", teacherController.getStudentsAvg);
 export default router;
