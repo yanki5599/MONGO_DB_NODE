@@ -22,25 +22,16 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const student_js_1 = __importDefault(require("./student.js"));
 const userSchema = new mongoose_1.default.Schema({
     userId: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: "CollageUser",
         required: true,
     },
-    ClassRoom: {
-        type: mongoose_1.Schema.Types.ObjectId,
-        ref: "ClassRoom",
-        required: true,
-    },
     students: {
-        type: [student_js_1.default],
+        type: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "Student" }],
         default: [],
     },
 });

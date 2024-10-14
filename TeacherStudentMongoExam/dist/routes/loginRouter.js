@@ -27,7 +27,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const authController = __importStar(require("../controllers/authController.js"));
+const authController = __importStar(require("../controllers/authController"));
 const router = express_1.default.Router();
 /**
  * @swagger
@@ -41,13 +41,13 @@ const router = express_1.default.Router();
  *                  schema:
  *                    type: object
  *                    properties:
- *                      passportId:
+ *                      email:
  *                        type: string
  *                      password:
  *                        type: string
  *                    example:
- *                      passportId: 123456789
- *                      password: password
+ *                      email: example@gmail.com
+ *                      password: 1234
  *
  *     responses:
  *       201:

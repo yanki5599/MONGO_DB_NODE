@@ -1,5 +1,5 @@
 import ClassRoomModel from "../models/classRoom";
-import { ITeacher } from "../models/teacher";
+import teacherModel, { ITeacher } from "../models/teacher";
 import statusCode from "../models/errorStatusConstants";
 import { ErrorWithStatusCode } from "../models/errorTypes";
 import mongoose, { Types } from "mongoose";
@@ -10,7 +10,11 @@ export const getClassRoomTeacher = async (
   if (!classRoom) {
     return undefined;
   }
-  return await classRoom.populate("teacherId");
+  const teacher = await teacherModel.findById(classRoom.teacherId);
+  if (!teacher) {
+    throw new ErrorWithStatusCode("Teacher not found", statusCode.NOT_FOUND);
+  }
+  return teacher;
 };
 
 export const getClassIdByName = async (

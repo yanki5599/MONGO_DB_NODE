@@ -17,7 +17,7 @@ export const authMiddleware = async (
   }
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-  const id = (decoded as { role: Role; id: string }).id;
+  const id = (decoded as { role: Role; _id: string })._id;
 
   if (!id) {
     res.status(401).send({ message: "Unauthorized" });

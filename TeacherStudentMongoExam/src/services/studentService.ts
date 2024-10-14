@@ -8,6 +8,7 @@ import { Role } from "../models/role";
 import classRoom from "../models/classRoom";
 import * as classRoomService from "./classRoomService";
 import { stat } from "fs";
+import { Types } from "mongoose";
 
 export const create = async (
   newStudent: IStudent,
@@ -24,16 +25,19 @@ export const create = async (
     newStudent.userId = addedUser._id;
     const added = await studentModel.create(newStudent);
     // add student id to teachers students array
-    await teacher.updateOne({
-      $push: { students: added._id },
-    });
+    teacher.students?.push(added._id);
+    await teacher.save();
     return await added.populate("userId");
   } catch (error: any) {
     throw new ErrorWithStatusCode(error.message, 400);
   }
 };
 
-export const getStudentById = async (studentId: string): Promise<IStudent> => {
+export const getStudentById = async (
+  studentId: Types.ObjectId | string
+): Promise<IStudent> => {
+  console.log("studentId", studentId);
+
   const student = await studentModel.findById(studentId).populate("userId");
   if (!student) throw new ErrorWithStatusCode("Student not found.", 404);
   return student;
@@ -84,3 +88,10 @@ export const updateGrade = async (
     throw new ErrorWithStatusCode(err.message, statusCode.BAD_REQUEST);
   }
 };
+export async function getStudentByUserId(
+  _id: Types.ObjectId | string
+): Promise<IStudent> {
+  const student = await studentModel.findOne({ userId: _id });
+  if (!student) throw new ErrorWithStatusCode("Student not found.", 404);
+  return student;
+}

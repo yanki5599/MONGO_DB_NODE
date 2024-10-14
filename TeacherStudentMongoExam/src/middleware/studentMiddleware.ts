@@ -7,10 +7,11 @@ export const studentMiddleware = async (
   next: NextFunction
 ) => {
   if ((req as any).user.role !== Role.STUDENT) {
-    return res.status(403).json({ message: "Forbidden" });
+    res.status(403).json({ message: "Forbidden" });
+    return;
   }
-  (req as any).student = await studentService.getStudentById(
-    (req as any).user.id
+  (req as any).student = await studentService.getStudentByUserId(
+    (req as any).user._id
   );
   next();
 };

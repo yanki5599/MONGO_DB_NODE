@@ -35,13 +35,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.register = void 0;
-const asyncHandler_js_1 = __importDefault(require("../middleware/asyncHandler.js"));
-const studentService = __importStar(require("../services/studentService.js"));
-exports.register = (0, asyncHandler_js_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getGrades = exports.register = void 0;
+const asyncHandler_1 = __importDefault(require("../middleware/asyncHandler"));
+const studentService = __importStar(require("../services/studentService"));
+exports.register = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const newStudent = req.body;
-    const added = yield studentService.create(newStudent);
-    res
-        .status(201)
-        .json({ success: true, message: "User created successfully" });
+    const added = yield studentService.create(newStudent, req.body.className);
+    res.status(201).json({
+        success: true,
+        message: "Student created successfully",
+        data: { username: added.fullName, userId: added.id },
+    });
+}));
+exports.getGrades = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const student = yield studentService.getGrades(req.student.id);
+    res.status(200).json({
+        success: true,
+        message: "Grades fetched successfully",
+        data: student,
+    });
 }));

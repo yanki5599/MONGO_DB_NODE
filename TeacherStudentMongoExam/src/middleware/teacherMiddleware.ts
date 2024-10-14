@@ -9,8 +9,8 @@ export const teacherMiddleware = async (
   if ((req as any).user.role !== Role.TEACHER) {
     return res.status(403).json({ message: "Forbidden" });
   }
-  (req as any).teacher = await teacherService.getTeacherById(
-    (req as any).user.id
+  (req as any).teacher = await teacherService.getTeacherByUserId(
+    (req as any).user._id
   );
   next();
 };

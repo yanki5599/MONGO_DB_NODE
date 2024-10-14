@@ -36,15 +36,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.login = void 0;
-const asyncHandler_js_1 = __importDefault(require("../middleware/asyncHandler.js"));
+const asyncHandler_1 = __importDefault(require("../middleware/asyncHandler"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const userService = __importStar(require("../services/userService.js"));
-const errorTypes_js_1 = require("../models/errorTypes.js");
-exports.login = (0, asyncHandler_js_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const userService = __importStar(require("../services/userService"));
+const errorTypes_1 = require("../models/errorTypes");
+exports.login = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
-    const user = yield userService.authenticateUser(email, password);
+    const user = yield userService.authenticateUser(email, password.toString());
     if (!user) {
-        throw new errorTypes_js_1.ErrorWithStatusCode("User not found", 404);
+        throw new errorTypes_1.ErrorWithStatusCode("User not found", 404);
     }
     const token = jsonwebtoken_1.default.sign({ role: user.role, _id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
     res.cookie("token", token, {

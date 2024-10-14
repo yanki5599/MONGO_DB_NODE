@@ -1,0 +1,54 @@
+### general routes 
+
+#### login
+
+Post http://localhost:5000/login
+Content-Type: application/json
+
+{
+    "email": "teacher@gmail.com",
+    "password": 1234
+}
+
+### student routes
+
+####register
+
+Post http://localhost:5000/student/register
+Content-Type: application/json
+
+{
+    "fullName": "22student",
+    "email": "22student@gmail.com",
+    "password": "1234",
+    "className": "moshe"
+}
+
+### get grades
+
+Get http://localhost:5000/student/grades
+
+
+### teacher routes
+
+### register
+
+Post http://localhost:5000/teacher/register
+Content-Type: application/json
+
+{
+    "fullName": "teacher",
+    "email": "teacher@gmail.com",
+    "password": "1234",
+    "className": "moshe"
+}
+
+### Add student grade
+
+Post http://localhost:5000/teacher/grade/670ccde4a35a2f429423eaea
+Content-Type: application/json
+
+{
+    "note": "good",
+    "grade": 5
+}

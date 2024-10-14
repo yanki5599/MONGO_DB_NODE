@@ -27,16 +27,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const studentController = __importStar(require("../controllers/studentController.js"));
-const studentMiddleware_js_1 = require("../middleware/studentMiddleware.js");
+const studentController = __importStar(require("../controllers/studentController"));
+const studentMiddleware_1 = require("../middleware/studentMiddleware");
+const authMiddleware_1 = require("../middleware/authMiddleware");
 const router = express_1.default.Router();
-router.route("/register").post(studentController.register);
-router.use(studentMiddleware_js_1.studentMiddleware);
 /**
  * @swagger
- * /register:
+ * /student/register:
  *   post:
- *     summary: registers a new user
+ *     summary: registers a new student
  *     requestBody:
  *            required: true
  *            content:
@@ -46,14 +45,17 @@ router.use(studentMiddleware_js_1.studentMiddleware);
  *                    properties:
  *                      fullName:
  *                        type: string
- *                      passportId:
+ *                      email:
  *                        type: string
  *                      password:
  *                        type: string
+ *                      className:
+ *                        type:string
  *                    example:
  *                      fullName: John Doe
- *                      passportId: 123456789
- *                      password: password
+ *                      email: example@gmail.com
+ *                      password: 1234
+ *                      className: moshe
  *
  *     responses:
  *       201:
@@ -65,8 +67,12 @@ router.use(studentMiddleware_js_1.studentMiddleware);
  *                properties:
  *                  message:
  *                    type: string
- *                    example: "User created successfully"
+ *                    example: "Student created successfully"
  *
  *
  */
+router.route("/register").post(studentController.register);
+router.use(authMiddleware_1.authMiddleware);
+router.use(studentMiddleware_1.studentMiddleware);
+router.route("/grades").get(studentController.getGrades);
 exports.default = router;

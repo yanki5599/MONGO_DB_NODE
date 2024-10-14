@@ -24,9 +24,58 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const teacherController = __importStar(require("../controllers/teacherController.js"));
-const teacherMiddleware_js_1 = require("../middleware/teacherMiddleware.js");
+const teacherController = __importStar(require("../controllers/teacherController"));
+const teacherMiddleware_1 = require("../middleware/teacherMiddleware");
+const authMiddleware_1 = require("../middleware/authMiddleware");
 const router = (0, express_1.Router)();
+/**
+ * @swagger
+ * /teacher/register:
+ *   post:
+ *     summary: registers a new teacher
+ *     requestBody:
+ *            required: true
+ *            content:
+ *              application/json:
+ *                  schema:
+ *                    type: object
+ *                    properties:
+ *                      fullName:
+ *                        type: string
+ *                      email:
+ *                        type: string
+ *                      password:
+ *                        type: string
+ *                      className:
+ *                        type:string
+ *                    example:
+ *                      fullName: John Doe
+ *                      email: example@gmail.com
+ *                      password: 1234
+ *                      className: moshe
+ *
+ *     responses:
+ *       201:
+ *         description: register
+ *         content:
+ *           application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  message:
+ *                    type: string
+ *                    example: "Teacher created successfully"
+ *
+ *
+ */
 router.route("/register").post(teacherController.register);
-router.use(teacherMiddleware_js_1.teacherMiddleware);
+router.use(authMiddleware_1.authMiddleware);
+router.use(teacherMiddleware_1.teacherMiddleware);
+router
+    .route("/grade/:id")
+    .get(teacherController.getStudentGrades)
+    .post(teacherController.addGradeForStudent)
+    .put(teacherController.updateGradeForStudent);
+router.get("/getAllStudents", teacherController.getAllStudents);
+router.get("/StudentsAvg", teacherController.getStudentsAvg);
 exports.default = router;

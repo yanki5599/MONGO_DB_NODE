@@ -35,22 +35,92 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.create = void 0;
-const errorTypes_js_1 = require("../models/errorTypes.js");
-const userService = __importStar(require("./userService.js"));
-const teacher_js_1 = __importDefault(require("../models/teacher.js"));
-const role_js_1 = require("../models/role.js");
-const SALT_ROUNDS = process.env.SALT_ROUNDS || 10;
-const create = (newTeacher) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getStudentsAvg = exports.getStudents = exports.validateStudent = exports.getTeacherById = exports.addGradeForStudent = exports.create = void 0;
+exports.getTeacherByUserId = getTeacherByUserId;
+const errorTypes_1 = require("../models/errorTypes");
+const userService = __importStar(require("./userService"));
+const teacher_1 = __importDefault(require("../models/teacher"));
+const role_1 = require("../models/role");
+const classRoom_1 = __importDefault(require("../models/classRoom"));
+const classRoomService = __importStar(require("./classRoomService"));
+const errorStatusConstants_1 = __importDefault(require("../models/errorStatusConstants"));
+const mongoose_1 = __importDefault(require("mongoose"));
+const student_1 = __importDefault(require("../models/student"));
+const create = (newTeacher, className) => __awaiter(void 0, void 0, void 0, function* () {
+    newTeacher.role = role_1.Role.TEACHER;
     const addedUser = yield userService.createUser(newTeacher);
     try {
+        if (yield classRoomService.getClassRoomTeacher(className)) {
+            throw new errorTypes_1.ErrorWithStatusCode("Classroom already exists", errorStatusConstants_1.default.CONFLICT);
+        }
+        // create teacher
         newTeacher.userId = addedUser._id;
-        newTeacher.role = role_js_1.Role.TEACHER;
-        const added = yield teacher_js_1.default.create(newTeacher);
-        return added;
+        const added = yield teacher_1.default.create(newTeacher);
+        // create classroom
+        const newClassRoom = yield classRoom_1.default.create({
+            name: className,
+            teacherId: added._id,
+        });
+        return yield newClassRoom;
     }
     catch (error) {
-        throw new errorTypes_js_1.ErrorWithStatusCode(error.message, 400);
+        throw new errorTypes_1.ErrorWithStatusCode(error.message, 400);
     }
 });
 exports.create = create;
+const addGradeForStudent = (studentId, grade, node) => __awaiter(void 0, void 0, void 0, function* () { });
+exports.addGradeForStudent = addGradeForStudent;
+const getTeacherById = (teacherId) => __awaiter(void 0, void 0, void 0, function* () {
+    const teacher = yield teacher_1.default.findById(teacherId).populate("userId");
+    if (!teacher) {
+        throw new errorTypes_1.ErrorWithStatusCode("Teacher not found", 404);
+    }
+    return teacher;
+});
+exports.getTeacherById = getTeacherById;
+const validateStudent = (teacherId, studentId) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("validateStudent");
+    console.log("teacherId", teacherId);
+    console.log("studentId", studentId);
+    const teacher = yield (0, exports.getTeacherById)(teacherId);
+    if (!teacher.students.includes(new mongoose_1.default.Types.ObjectId(studentId)))
+        throw new errorTypes_1.ErrorWithStatusCode("Student is not in your class", errorStatusConstants_1.default.FORBIDDEN);
+    return true;
+});
+exports.validateStudent = validateStudent;
+const getStudents = (teacherId) => __awaiter(void 0, void 0, void 0, function* () {
+    const teacher = yield teacher_1.default
+        .findById(teacherId)
+        .populate({ path: "students", populate: { path: "userId" } });
+    if (!teacher)
+        throw new errorTypes_1.ErrorWithStatusCode("Teacher not found", errorStatusConstants_1.default.NOT_FOUND);
+    return teacher;
+});
+exports.getStudents = getStudents;
+const getStudentsAvg = (teacherId) => __awaiter(void 0, void 0, void 0, function* () {
+    const teacher = yield (0, exports.getStudents)(teacherId);
+    // get teacher with students and calculate average of their grades for each student
+    const result = yield student_1.default.aggregate([
+        {
+            $match: { _id: { $in: teacher.students } },
+        },
+        {
+            $group: {
+                _id: "$_id",
+                avg: {
+                    $avg: "$grades.grade",
+                },
+            },
+        },
+    ]);
+    return result;
+});
+exports.getStudentsAvg = getStudentsAvg;
+function getTeacherByUserId(_id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const teacher = yield teacher_1.default.findOne({ userId: _id });
+        if (!teacher)
+            throw new errorTypes_1.ErrorWithStatusCode("Teacher not found.", 404);
+        return teacher;
+    });
+}

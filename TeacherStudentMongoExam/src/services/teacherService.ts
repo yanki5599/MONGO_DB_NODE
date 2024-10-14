@@ -6,7 +6,7 @@ import { Role } from "../models/role";
 import classRoomModel, { IClassRoom } from "../models/classRoom";
 import * as classRoomService from "./classRoomService";
 import statusCode from "../models/errorStatusConstants";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import studentModel, { IStudent } from "../models/student";
 
 export const create = async (
@@ -44,7 +44,9 @@ export const addGradeForStudent = async (
   node: string
 ): Promise<void> => {};
 
-export const getTeacherById = async (teacherId: string): Promise<ITeacher> => {
+export const getTeacherById = async (
+  teacherId: Types.ObjectId | string
+): Promise<ITeacher> => {
   const teacher = await teacherModel.findById(teacherId).populate("userId");
   if (!teacher) {
     throw new ErrorWithStatusCode("Teacher not found", 404);
@@ -53,11 +55,14 @@ export const getTeacherById = async (teacherId: string): Promise<ITeacher> => {
 };
 
 export const validateStudent = async (
-  teacherId: string,
-  studentId: string
+  teacherId: Types.ObjectId | string,
+  studentId: Types.ObjectId | string
 ): Promise<boolean> => {
   const teacher = await getTeacherById(teacherId);
-  if (!teacher.students.includes(new mongoose.Types.ObjectId(studentId)))
+  console.log("studentId", studentId);
+  console.log("students: ", teacher.students);
+
+  if (!teacher.students.find((sId) => sId.toString() === studentId.toString()))
     throw new ErrorWithStatusCode(
       "Student is not in your class",
       statusCode.FORBIDDEN
@@ -94,3 +99,10 @@ export const getStudentsAvg = async (
   ]);
   return result;
 };
+export async function getTeacherByUserId(
+  _id: Types.ObjectId | string
+): Promise<ITeacher> {
+  const teacher = await teacherModel.findOne({ userId: _id });
+  if (!teacher) throw new ErrorWithStatusCode("Teacher not found.", 404);
+  return teacher;
+}

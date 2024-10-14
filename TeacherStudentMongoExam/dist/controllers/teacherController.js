@@ -35,13 +35,58 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.register = void 0;
-const asyncHandler_js_1 = __importDefault(require("../middleware/asyncHandler.js"));
-const teacherService = __importStar(require("../services/teacherService.js"));
-exports.register = (0, asyncHandler_js_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.getStudentsAvg = exports.getAllStudents = exports.updateGradeForStudent = exports.addGradeForStudent = exports.getStudentGrades = exports.register = void 0;
+const asyncHandler_1 = __importDefault(require("../middleware/asyncHandler"));
+const teacherService = __importStar(require("../services/teacherService"));
+const studentService = __importStar(require("../services/studentService"));
+exports.register = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const newTeacher = req.body;
-    const added = yield teacherService.create(newTeacher);
-    res
-        .status(201)
-        .json({ success: true, message: "User created successfully" });
+    const classRoom = yield teacherService.create(newTeacher, req.body.className);
+    res.status(201).json({
+        success: true,
+        message: "Teacher created successfully",
+        data: { classId: classRoom.id },
+    });
+}));
+exports.getStudentGrades = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const grades = yield studentService.getGrades(req.params.id);
+    res.status(200).json({
+        success: true,
+        message: "Grades fetched successfully",
+        data: grades,
+    });
+}));
+exports.addGradeForStudent = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    teacherService.validateStudent(req.params.id, req.teacher._id);
+    const added = yield studentService.addGradeForStudent(req.params.id, req.body);
+    res.status(201).json({
+        success: true,
+        message: "Grade added successfully",
+        data: added,
+    });
+}));
+exports.updateGradeForStudent = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    teacherService.validateStudent(req.params.id, req.teacher.id);
+    const updated = yield studentService.updateGrade(req.params.id, req.body);
+    res.status(204).json({
+        success: true,
+        message: "grade updated successfully:",
+        data: updated,
+    });
+}));
+exports.getAllStudents = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const teacher = yield teacherService.getStudents(req.teacher.id);
+    res.status(200).json({
+        success: true,
+        message: "Students fetched successfully",
+        data: teacher.students,
+    });
+}));
+exports.getStudentsAvg = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const StudentsAvg = yield teacherService.getStudentsAvg(req.teacher.id);
+    res.status(200).json({
+        success: true,
+        message: "Students fetched successfully",
+        data: StudentsAvg,
+    });
 }));
