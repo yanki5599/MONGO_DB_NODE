@@ -11,7 +11,7 @@ export const studentMiddleware = async (
     return;
   }
   (req as any).student = await studentService.getStudentByUserId(
-    (req as any).user._id
+    (req as any).user.id
   );
   next();
 };

@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getClassIdByName = exports.getClassRoomTeacher = void 0;
 const classRoom_1 = __importDefault(require("../models/classRoom"));
+const teacher_1 = __importDefault(require("../models/teacher"));
 const errorStatusConstants_1 = __importDefault(require("../models/errorStatusConstants"));
 const errorTypes_1 = require("../models/errorTypes");
 const getClassRoomTeacher = (classRoomName) => __awaiter(void 0, void 0, void 0, function* () {
@@ -21,7 +22,11 @@ const getClassRoomTeacher = (classRoomName) => __awaiter(void 0, void 0, void 0,
     if (!classRoom) {
         return undefined;
     }
-    return yield classRoom.populate("teacherId");
+    const teacher = yield teacher_1.default.findById(classRoom.teacherId);
+    if (!teacher) {
+        throw new errorTypes_1.ErrorWithStatusCode("Teacher not found", errorStatusConstants_1.default.NOT_FOUND);
+    }
+    return teacher;
 });
 exports.getClassRoomTeacher = getClassRoomTeacher;
 const getClassIdByName = (classRoomName) => __awaiter(void 0, void 0, void 0, function* () {

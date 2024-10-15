@@ -44,6 +44,7 @@ const userService = __importStar(require("./userService"));
 const role_1 = require("../models/role");
 const classRoomService = __importStar(require("./classRoomService"));
 const create = (newStudent, className) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     if (!className)
         throw new errorTypes_1.ErrorWithStatusCode("ClassName missing.", errorStatusConstants_1.default.BAD_REQUEST);
     const teacher = yield classRoomService.getClassRoomTeacher(className);
@@ -55,9 +56,8 @@ const create = (newStudent, className) => __awaiter(void 0, void 0, void 0, func
         newStudent.userId = addedUser._id;
         const added = yield student_1.default.create(newStudent);
         // add student id to teachers students array
-        yield teacher.updateOne({
-            $push: { students: added._id },
-        });
+        (_a = teacher.students) === null || _a === void 0 ? void 0 : _a.push(added._id);
+        yield teacher.save();
         return yield added.populate("userId");
     }
     catch (error) {

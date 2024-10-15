@@ -49,7 +49,7 @@ export const addGradeForStudent = asyncHandler(
 );
 export const updateGradeForStudent = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    teacherService.validateStudent(req.params.id, (req as any).teacher.id);
+    teacherService.validateStudent((req as any).teacher.id, req.params.id);
 
     const updated = await studentService.updateGrade(req.params.id, req.body);
 

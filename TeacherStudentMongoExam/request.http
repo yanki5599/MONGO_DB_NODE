@@ -18,8 +18,8 @@ Post http://localhost:5000/student/register
 Content-Type: application/json
 
 {
-    "fullName": "22student",
-    "email": "22student@gmail.com",
+    "fullName": "student",
+    "email": "student@gmail.com",
     "password": "1234",
     "className": "moshe"
 }
@@ -45,10 +45,37 @@ Content-Type: application/json
 
 ### Add student grade
 
-Post http://localhost:5000/teacher/grade/670ccde4a35a2f429423eaea
+Post http://localhost:5000/teacher/grade/670e01073e9851d15b299e75
 Content-Type: application/json
 
 {
+
     "note": "good",
     "grade": 5
 }
+
+
+### get student grades
+
+Get http://localhost:5000/teacher/grade/670e01073e9851d15b299e75
+
+
+### update student grade
+
+Put http://localhost:5000/teacher/grade/670e01073e9851d15b299e75
+Content-Type: application/json
+
+{
+    "_id":"670e04045f51ac8f14e18b0d",
+    "note": "good",
+    "grade": 55
+}
+
+### get all students
+
+Get http://localhost:5000/teacher/getAllStudents
+
+
+### get students average grade
+
+Get http://localhost:5000/teacher/StudentsAvg

@@ -57,7 +57,7 @@ exports.getStudentGrades = (0, asyncHandler_1.default)((req, res, next) => __awa
     });
 }));
 exports.addGradeForStudent = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    teacherService.validateStudent(req.params.id, req.teacher._id);
+    teacherService.validateStudent(req.teacher.id, req.params.id);
     const added = yield studentService.addGradeForStudent(req.params.id, req.body);
     res.status(201).json({
         success: true,

@@ -18,7 +18,7 @@ export const login = asyncHandler(
       throw new ErrorWithStatusCode("User not found", 404);
     }
     const token = jwt.sign(
-      { role: user.role, _id: user._id },
+      { role: user.role, id: user.id },
       process.env.JWT_SECRET as string,
       { expiresIn: "1h" }
     );

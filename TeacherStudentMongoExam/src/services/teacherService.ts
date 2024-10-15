@@ -56,13 +56,13 @@ export const getTeacherById = async (
 
 export const validateStudent = async (
   teacherId: Types.ObjectId | string,
-  studentId: Types.ObjectId | string
+  studentId: string
 ): Promise<boolean> => {
   const teacher = await getTeacherById(teacherId);
   console.log("studentId", studentId);
   console.log("students: ", teacher.students);
 
-  if (!teacher.students.find((sId) => sId.toString() === studentId.toString()))
+  if (!teacher.students.toString().includes(studentId.toString()))
     throw new ErrorWithStatusCode(
       "Student is not in your class",
       statusCode.FORBIDDEN
@@ -71,9 +71,7 @@ export const validateStudent = async (
 };
 
 export const getStudents = async (teacherId: string): Promise<ITeacher> => {
-  const teacher = await teacherModel
-    .findById(teacherId)
-    .populate({ path: "students", populate: { path: "userId" } });
+  const teacher = await teacherModel.findById(teacherId).populate("students");
   if (!teacher)
     throw new ErrorWithStatusCode("Teacher not found", statusCode.NOT_FOUND);
   return teacher;
@@ -82,15 +80,21 @@ export const getStudents = async (teacherId: string): Promise<ITeacher> => {
 export const getStudentsAvg = async (
   teacherId: string
 ): Promise<IStudent[]> => {
-  const teacher = await getStudents(teacherId);
-  // get teacher with students and calculate average of their grades for each student
+  const teacher = await getTeacherById(teacherId);
   const result: IStudent[] = await studentModel.aggregate([
     {
       $match: { _id: { $in: teacher.students } },
     },
     {
-      $group: {
-        _id: "$_id",
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    {
+      $project: {
         avg: {
           $avg: "$grades.grade",
         },

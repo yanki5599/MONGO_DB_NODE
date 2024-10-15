@@ -78,20 +78,24 @@ export const updateGrade = async (
   grade: IGrade
 ): Promise<IGrade> => {
   try {
-    const updatedStudent = await studentModel.findByIdAndUpdate(
-      { studentId, "grades.id": grade._id },
-      { $set: { "grades.$": grade } },
-      { new: true }
+    const student = await getStudentById(studentId);
+    const idx = student.grades.findIndex(
+      (x) => x._id.toString() === grade._id.toString()
     );
-    return updatedStudent?.grades.find((x) => x._id == grade._id)!;
+    if (idx === -1) {
+      throw new ErrorWithStatusCode("Grade not found.", statusCode.NOT_FOUND);
+    }
+    student.grades[idx] = grade;
+    await student.save();
+    return student.grades[idx];
   } catch (err: any) {
     throw new ErrorWithStatusCode(err.message, statusCode.BAD_REQUEST);
   }
 };
 export async function getStudentByUserId(
-  _id: Types.ObjectId | string
+  id: Types.ObjectId | string
 ): Promise<IStudent> {
-  const student = await studentModel.findOne({ userId: _id });
+  const student = await studentModel.findOne({ userId: id });
   if (!student) throw new ErrorWithStatusCode("Student not found.", 404);
   return student;
 }

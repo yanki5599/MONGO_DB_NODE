@@ -44,7 +44,6 @@ const role_1 = require("../models/role");
 const classRoom_1 = __importDefault(require("../models/classRoom"));
 const classRoomService = __importStar(require("./classRoomService"));
 const errorStatusConstants_1 = __importDefault(require("../models/errorStatusConstants"));
-const mongoose_1 = __importDefault(require("mongoose"));
 const student_1 = __importDefault(require("../models/student"));
 const create = (newTeacher, className) => __awaiter(void 0, void 0, void 0, function* () {
     newTeacher.role = role_1.Role.TEACHER;
@@ -79,11 +78,10 @@ const getTeacherById = (teacherId) => __awaiter(void 0, void 0, void 0, function
 });
 exports.getTeacherById = getTeacherById;
 const validateStudent = (teacherId, studentId) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("validateStudent");
-    console.log("teacherId", teacherId);
-    console.log("studentId", studentId);
     const teacher = yield (0, exports.getTeacherById)(teacherId);
-    if (!teacher.students.includes(new mongoose_1.default.Types.ObjectId(studentId)))
+    console.log("studentId", studentId);
+    console.log("students: ", teacher.students);
+    if (!teacher.students.find((sId) => sId.toString() === studentId.toString()))
         throw new errorTypes_1.ErrorWithStatusCode("Student is not in your class", errorStatusConstants_1.default.FORBIDDEN);
     return true;
 });
